@@ -6,7 +6,7 @@ Single place a fresh Claude session (or Opus) reads to know where the build is. 
 
 | Prompt | Scope | Status | Smoke |
 |---|---|---|---|
-| P0-01 | Next.js 15 + TS strict + Tailwind + Drizzle deps + ESLint/Prettier + `/health` + `.env.example` + CI | **DONE** 2026-06-12 | PASS — build green, `/health` → `{"ok":true}` |
+| P0-01 | Next.js 15 + TS strict + Tailwind + Drizzle deps + ESLint/Prettier + `/health` + `.env.example` + CI | **DONE** 2026-06-12 | PASS locally — build green, `/health` → `{"ok":true}`. CI workflow committed but has never executed (repo has no GitHub remote yet); first real run happens on first push. |
 | P0-02 | Drizzle config + schema + first migration (`users`, `plans`, `audit_log`) | **DONE** 2026-06-12 | PASS — migration generated + verified, lint/typecheck green |
 | P0-03 | DB client + `/db-check` server-component round-trip read | **CODE DONE / SMOKE BLOCKED** | Needs `DATABASE_URL` (Cloudflare Tunnel hostname + creds) |
 | P0-04 | Vercel preview deploy + gate check | **BLOCKED** | Needs Vercel project link + env vars |

@@ -11,7 +11,7 @@ What needs to be plugged in, when, and what it's for. Two categories: **MCP serv
 | **chrome-devtools** | connected (plugin) | Driving/screenshotting the wizard + dashboard for UX smokes | P2, P7 |
 | **Supabase (claude.ai)** | connected, **limited use** | ⚠ Targets supabase.com **cloud** projects. Our Supabase is **self-hosted** on the Mumbai VPS — not manageable through this MCP. Use it only for `search_docs`. DB work goes through `DATABASE_URL` + drizzle-kit/psql. | docs only |
 | **Discord plugin** (`discord:access` / `discord:configure` skills) | available | Test-guild operations for the P3/P4 harness (command registration checks, scripted invocations) | P3–P4 |
-| **PostHog** | connected | Optional internal funnel metrics (signup → first gen → paid). NOT customer-facing analytics — that's §10 OUT. | P7+, optional |
+| **PostHog** | connected | Claude Code tooling only (querying its docs/tools). The **product** does not send events to PostHog — internal cost/burn/funnel views live in the admin panel on our own tables (§3.8, §4.3, §5.6). Adding PostHog to the product would require a desandria.md edit. | — |
 | Figma / Notion / Drive / Spotify / Stripe MCPs | connected | Not needed for v1. Stripe MCP irrelevant — payments are Razorpay + NOWPayments (§1). | — |
 
 **Missing / nice-to-have MCPs:** none required for P0–P2. For P5–P7 Pradyuman works on the VPS directly (SSH/Coolify), no MCP needed.
