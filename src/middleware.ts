@@ -7,9 +7,9 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Run on all paths except static assets and image optimization. The auth
-  // callback and API routes still pass through so the session stays fresh.
+  // Run on all paths except static assets, image optimization, and /health
+  // (the healthcheck must not depend on Supabase reachability).
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|health|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
