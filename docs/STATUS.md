@@ -53,6 +53,8 @@ Founder authorized proceeding (2026-06-13, "lets move further"). Gate: OAuth rou
 
 **New Vercel env vars to add now** (Production + Preview): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (both from `.env`; public by design). Add `SUPABASE_SERVICE_ROLE` once you have it.
 
+**Prod deploy state (commit `eaaeadb`):** `/health` and `/db-check` verified still green after the P1 deploy (middleware degrades gracefully). `/login` and `/dashboard` currently **500 in prod** because the two `NEXT_PUBLIC_SUPABASE_*` vars above aren't in Vercel yet — they activate once added + redeployed. Locally (with `.env`) all auth pages render fine.
+
 ### Open questions (raise at P1 gate)
 - Plan numeric limits for paid tiers (Forge/Pro generation+edit counts, BYO/DFY) are **placeholders** in the seed — spec pins only Spark=3 gens/mo and Forge=20 edits/mo (§4.3). Confirm real values.
 - Pre-existing `public.rls_auto_enable()` event-trigger function (auto-enables RLS on new public tables) is flagged by the security advisor as anon-executable. Not created by this build. Review/harden if desired (low risk: errors outside event-trigger context).
