@@ -51,7 +51,9 @@ https://<url>/db-check  → renders Postgres time + plans rows (live read)
 
 **P0 gate:** prod URL renders data read from the database (desandria.md §8).
 
-**Status: BLOCKED on founder (2026-06-13).** Cannot deploy headlessly: `vercel` CLI not authed (login is interactive) and the Vercel MCP only returns instructions. Repo is pushed to GitHub and ready to import. Local round-trip already proves the data path; only the prod hosting hop remains.
+**Status: PARTIAL (2026-06-13).** Prod deployed (Vercel project `desandria`, region `bom1`). `https://desandria.vercel.app/health` → `{"ok":true}` ✅. `/db-check` returns 200 but the DB-unreachable banner because env vars are not yet set in Vercel. Closing step: set `DATABASE_URL` (+ `TOKEN_ENC_KEY`, `MAX_HOSTED_BOTS`, `LLM_MONTHLY_CAP_USD`) in the Vercel project, then redeploy → `/db-check` renders live data = gate CLOSED.
+
+Resolved gotcha: deployments of commits authored as `yokegg38@gmail.com` came back `BLOCKED` (author not on the Vercel team); commits now authored as `opsstoic20-gif <opsstoic20@gmail.com>` build normally.
 
 ## Conventions for future phases
 
