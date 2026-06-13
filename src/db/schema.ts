@@ -22,12 +22,12 @@ import {
 export const userRole = pgEnum("user_role", ["user", "admin"]);
 
 /**
- * Application users. In P1 this links to Supabase Auth (id = auth.users.id).
- * RLS is enabled here (deny-by-default); auth-aware policies are added in P1
- * when Supabase Auth is wired up (desandria.md §8 P1 gate).
+ * Application users. `id` equals the Supabase Auth user id (`auth.users.id`) —
+ * no standalone default; rows are created by the `handle_new_user` trigger on
+ * `auth.users` (migration 0002). RLS enabled with auth-aware policies (0002).
  */
 export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: uuid("id").primaryKey(),
   email: text("email").notNull().unique(),
   displayName: text("display_name"),
   role: userRole("role").notNull().default("user"),

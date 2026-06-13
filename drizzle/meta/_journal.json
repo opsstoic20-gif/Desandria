@@ -8,6 +8,27 @@
       "when": 1781248111947,
       "tag": "0000_last_warstar",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1781361400010,
+      "tag": "0001_condemned_agent_brand",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781361424269,
+      "tag": "0002_supabase_auth_rls_seed",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1781361611835,
+      "tag": "0003_harden_handle_new_user",
+      "breakpoints": true
     }
   ]
 }
