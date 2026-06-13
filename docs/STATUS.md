@@ -39,12 +39,23 @@ Founder authorized proceeding (2026-06-13, "lets move further"). Gate: OAuth rou
 
 | Prompt | Scope | Status |
 |---|---|---|
-| P1-01 | `@supabase/ssr` clients (browser + server) + session middleware + env.ts extension | in progress |
-| P1-02 | Email auth: sign-up / sign-in / sign-out + auth callback | pending |
-| P1-03 | Discord OAuth (Supabase provider + button + callback) | pending (needs Discord app) |
-| P1-04 | Dashboard shell (protected) + plans seed + `users`↔`auth.users` + RLS policies | pending |
+| P1-01 | `@supabase/ssr` clients (browser + server) + session middleware + env.ts | **DONE** — build green; `/` and `/health` 200 through middleware |
+| P1-DB | Migrations 0001–0003: `users.id`→`auth.users`, `handle_new_user` trigger, RLS select/update-own, 5 plans seeded, trigger hardened | **DONE** — applied + verified via Supabase MCP; advisor clean for our objects |
+| P1-02 | Email auth: zod server actions (sign-in/up/out) + `/login` + `/auth/callback` + `/auth/confirm` | **CODE DONE** — `/login` 200 w/ Discord button; round-trip pending creds |
+| P1-03 | Discord OAuth (button + `signInWithOAuth` + callback) | **CODE DONE** — round-trip needs Discord app + Supabase provider config |
+| P1-04 | Protected `/dashboard` shell + sign-out + home link | **DONE** — `/dashboard` 307→`/login` when logged out |
 
-Auth keys obtained via Supabase MCP: `SUPABASE_URL`, anon/publishable key (in `.env`). **Still needed from founder:** `SUPABASE_SERVICE_ROLE` (admin ops, test-user creation) + a Discord OAuth app (client id/secret) for P1-03.
+**P1 gate (OAuth round-trip + RLS verified with two users): NOT closed — blocked on creds.** Remaining:
+
+1. **`SUPABASE_SERVICE_ROLE`** (dashboard → Settings → API → service_role) → add to `.env` + Vercel. Unblocks the RLS-two-users gate test: `node --env-file=.env scripts/verify-rls.mjs`.
+2. **Discord OAuth app** (client id + secret) configured in Supabase → Auth → Providers → Discord, redirect `https://efterrtpcbyjriljnfzt.supabase.co/auth/v1/callback`. Unblocks the OAuth round-trip.
+3. **Email confirmation**: Supabase Cloud requires it by default. For a quick email round-trip in dev, either leave it on (real inbox) or disable in Auth settings; the RLS script sidesteps it via admin `email_confirm: true`.
+
+**New Vercel env vars to add now** (Production + Preview): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (both from `.env`; public by design). Add `SUPABASE_SERVICE_ROLE` once you have it.
+
+### Open questions (raise at P1 gate)
+- Plan numeric limits for paid tiers (Forge/Pro generation+edit counts, BYO/DFY) are **placeholders** in the seed — spec pins only Spark=3 gens/mo and Forge=20 edits/mo (§4.3). Confirm real values.
+- Pre-existing `public.rls_auto_enable()` event-trigger function (auto-enables RLS on new public tables) is flagged by the security advisor as anon-executable. Not created by this build. Review/harden if desired (low risk: errors outside event-trigger context).
 
 ## Phases P2–P7
 

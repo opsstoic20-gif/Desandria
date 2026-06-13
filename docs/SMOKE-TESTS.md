@@ -55,6 +55,46 @@ https://<url>/db-check  → renders Postgres time + plans rows (live read)
 
 Resolved gotcha: deployments of commits authored as `yokegg38@gmail.com` came back `BLOCKED` (author not on the Vercel team); commits now authored as `opsstoic20-gif <opsstoic20@gmail.com>` build normally.
 
+## P1-01 — Supabase SSR clients + session middleware
+
+```powershell
+pnpm lint; pnpm typecheck; pnpm build      # green; "ƒ Middleware" listed
+$env:PORT=3113; pnpm dev
+Invoke-WebRequest http://localhost:3113/         -UseBasicParsing   # 200
+Invoke-WebRequest http://localhost:3113/health   -UseBasicParsing   # {"ok":true}
+```
+**Status: PASS (2026-06-13).** Build green, middleware registered; `/` and `/health` 200 through session-refresh middleware.
+
+## P1-DB — migrations 0001–0003 (auth link, trigger, RLS, plans seed)
+
+```powershell
+pnpm db:migrate    # "migrations applied successfully!"
+```
+Verify via Supabase MCP (or SQL): 5 plans seeded; `users_select_own` + `users_update_own` policies; `on_auth_user_created` trigger; `users_id_auth_users_fk`; security advisor shows no WARN for our objects.
+
+**Status: PASS (2026-06-13).** All four verified; `handle_new_user` EXECUTE revoked from anon/authenticated/public (0003).
+
+## P1-02/03/04 — auth flow + protected dashboard
+
+```powershell
+pnpm build                                 # all auth routes compile
+$env:PORT=3114; pnpm dev
+# /login -> 200, has "Continue with Discord"
+# /dashboard (logged out) -> 307 redirect to /login
+# / -> 200, has "Get started"
+```
+**Status: PASS for build + render + route protection (2026-06-13).**
+
+## P1 GATE — OAuth round-trip + RLS with two users
+
+```powershell
+# RLS (needs SUPABASE_SERVICE_ROLE in .env):
+node --env-file=.env scripts/verify-rls.mjs    # expect "RLS verification: PASS"
+# OAuth round-trip (needs Discord app + Supabase provider configured):
+#   /login -> Continue with Discord -> Discord consent -> /auth/callback -> /dashboard
+```
+**Status: BLOCKED (2026-06-13)** on `SUPABASE_SERVICE_ROLE` (RLS test) and the Discord OAuth app (round-trip). Code paths complete; see docs/STATUS.md P1 section.
+
 ## Conventions for future phases
 
 - Each P*-NN prompt adds its smoke section here before the prompt is reported DONE.
