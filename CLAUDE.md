@@ -53,7 +53,7 @@ Anything in desandria.md §10 (marketplace/listings, emoji/sticker store, dev-ma
 3. Do not introduce Prisma, Redis, tRPC, or a second ORM/queue "for convenience."
 4. Do not generate a full bot project per customer — modules + config only (§5.2).
 5. Do not create or use a Desandria-owned Discord bot token for customer workloads.
-6. Do not put `DATABASE_URL` or any secret in client components, `NEXT_PUBLIC_*`, or page output. `src/lib/env.ts` is the only env reader in app code; it imports `server-only`. Sole exception: `drizzle.config.ts` (drizzle-kit CLI, never bundled) reads `process.env.DATABASE_URL` directly because it cannot import a `server-only` module.
+6. Do not put `DATABASE_URL` or any **secret** in client components, `NEXT_PUBLIC_*`, or page output. `src/lib/env.ts` is the only reader of **secret/server** env in app code; it imports `server-only`. Exceptions, all non-secret or non-bundled: (a) `drizzle.config.ts` (drizzle-kit CLI, never bundled) reads `process.env.DATABASE_URL` directly; (b) the Supabase client modules read `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` at point of use — these are **public** by Supabase design (browser needs them; RLS protects data), so they are not secrets. `SUPABASE_SERVICE_ROLE` **is** a secret: server-only, never `NEXT_PUBLIC_`.
 7. Do not let `next build` require live env/DB — DB access stays lazy (`getDb()`), DB pages stay `force-dynamic`.
 8. Do not write RLS policies that reference `auth.uid()` before Supabase Auth is wired (P1).
 9. Do not skip the sandbox harness for "obviously fine" generated artifacts — never deploy unharnessed artifacts (§5.3).
