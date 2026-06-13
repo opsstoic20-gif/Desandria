@@ -15,9 +15,9 @@ Single place a fresh Claude session (or Opus) reads to know where the build is. 
 | P0-01 | Next.js 15 + TS strict + Tailwind + Drizzle deps + ESLint/Prettier + `/health` + `.env.example` + CI | **DONE** | PASS — build green, `/health` → `{"ok":true}`. Pushed to GitHub `opsstoic20-gif/Desandria`; first CI run triggers on push. |
 | P0-02 | Drizzle config + schema + first migration (`users`, `plans`, `audit_log`) | **DONE** | PASS — migration generated + verified; **applied to Supabase** (`pnpm db:migrate` ✓). |
 | P0-03 | DB client + `/db-check` server-component round-trip read | **DONE** 2026-06-13 | **PASS (real)** — `pnpm dev` → `/health` `{"ok":true}`, `/db-check` round-trip OK, `plans` rows = 0 (no seed yet, expected). |
-| P0-04 | Vercel deploy + gate check | **DEPLOYED — one env step from gate** | Prod live: `https://desandria.vercel.app/health` → `{"ok":true}` (region `bom1`/Mumbai). `/db-check` renders but shows DB-unreachable until env vars are set in Vercel + a redeploy. |
+| P0-04 | Vercel deploy + gate check | **DONE** 2026-06-13 | Prod live (region `bom1`): `/health` → `{"ok":true}`; `/db-check` renders live Postgres data (`now()` + plans count). Env vars set in Vercel. |
 
-**P0 gate:** prod URL renders data read from the database. **`/health` live in prod; `/db-check` needs `DATABASE_URL` set in Vercel + redeploy, then gate is CLOSED.**
+**P0 gate: ✅ CLOSED (2026-06-13).** `https://desandria.vercel.app/db-check` renders data read live from the database (Postgres time verified). Data path Vercel → Supabase proven end-to-end.
 
 ### P0-04 — exact steps to finish the gate (founder, ~5 min)
 
@@ -33,9 +33,22 @@ Single place a fresh Claude session (or Opus) reads to know where the build is. 
 
 **Gotcha hit + resolved (2026-06-13): Vercel `BLOCKED` deployments.** The first auto-deploys (commits authored as `yokegg38@gmail.com`) came back `BLOCKED` — Vercel refuses to build commits whose author isn't a member of the Vercel team (owner `opsstoic20@gmail.com`). Manual redeploys then re-ran the only authorized commit, the empty `09bc82c` stub, which `ERROR`s (no `package.json`). Fix: repo-local git identity set to `opsstoic20-gif <opsstoic20@gmail.com>` so commits deploy. If you ever commit from another identity, either add that email to the Vercel team or keep committing as the authorized author.
 
-## Phases P1–P7
+## Phase P1 — Auth & shell (in progress)
 
-Not started. Gate discipline per CLAUDE.md: do not begin P1 until founder types `GATE PASSED` for P0.
+Founder authorized proceeding (2026-06-13, "lets move further"). Gate: OAuth round-trip + RLS verified with two users.
+
+| Prompt | Scope | Status |
+|---|---|---|
+| P1-01 | `@supabase/ssr` clients (browser + server) + session middleware + env.ts extension | in progress |
+| P1-02 | Email auth: sign-up / sign-in / sign-out + auth callback | pending |
+| P1-03 | Discord OAuth (Supabase provider + button + callback) | pending (needs Discord app) |
+| P1-04 | Dashboard shell (protected) + plans seed + `users`↔`auth.users` + RLS policies | pending |
+
+Auth keys obtained via Supabase MCP: `SUPABASE_URL`, anon/publishable key (in `.env`). **Still needed from founder:** `SUPABASE_SERVICE_ROLE` (admin ops, test-user creation) + a Discord OAuth app (client id/secret) for P1-03.
+
+## Phases P2–P7
+
+Not started. Gate discipline per CLAUDE.md: do not begin a phase until the founder authorizes it.
 
 ## Open questions for the P0 gate
 
