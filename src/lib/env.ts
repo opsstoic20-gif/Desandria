@@ -37,3 +37,19 @@ export function serverEnv(): ServerEnv {
   cached = parsed.data;
   return cached;
 }
+
+/**
+ * The Supabase service_role secret (bypasses RLS). Kept OUT of the required
+ * schema above so the app boots without it; only the admin client and scripts
+ * that genuinely need elevated access call this, and it throws loudly if unset.
+ * server-only — never `NEXT_PUBLIC_`.
+ */
+export function requireServiceRole(): string {
+  const key = process.env.SUPABASE_SERVICE_ROLE;
+  if (!key || key.length === 0) {
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE is required for this operation but is not set.",
+    );
+  }
+  return key;
+}

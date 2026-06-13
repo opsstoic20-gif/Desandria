@@ -6,7 +6,12 @@ export default function Home() {
         Describe your Discord bot in plain English &rarr; it&apos;s generated,
         tested, and hosted 24/7 in minutes.
       </p>
-      <p className="text-sm text-zinc-600">v1 scaffold — P0 in progress</p>
+      <a
+        href="/login"
+        className="rounded bg-zinc-100 px-5 py-2 text-sm font-medium text-zinc-900 hover:bg-white"
+      >
+        Get started
+      </a>
     </main>
   );
 }
