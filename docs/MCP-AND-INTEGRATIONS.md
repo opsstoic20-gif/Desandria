@@ -20,16 +20,18 @@ What needs to be plugged in, when, and what it's for. Two categories: **MCP serv
 
 | Service | Env vars | Needed by | Owner action |
 |---|---|---|---|
-| Mumbai Postgres via Cloudflare Tunnel | `DATABASE_URL` | **P0-03 (now)** | Create a Tunnel public hostname (TCP) for Postgres; strong password + (ideally) Cloudflare Access service token. Vercel must be able to reach it. |
-| Self-hosted Supabase | `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE` | P1 auth | Copy keys from the VPS Supabase stack; set Site URL + redirect URLs for Vercel domains. |
+| **Supabase Cloud (dev DB)** | `DATABASE_URL` (`:6543` txn pooler), `MIGRATE_DATABASE_URL` (`:5432` session pooler) | **DONE (dev)** | ✅ Wired + migrated. Project `efterrtpcbyjriljnfzt`, region Seoul. **Temporary** — prod moves to self-hosted Mumbai (STATUS.md deviation). Rotate the pasted password. |
+| Mumbai Postgres via Cloudflare Tunnel (prod) | `DATABASE_URL` | pre-launch | Create a Tunnel TCP hostname for Postgres; strong auth; reachable from Vercel. Swap the dev URLs for these. |
+| Self-hosted Supabase (prod) / Cloud (P1 dev) | `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE` | P1 auth | For P1 dev, copy the anon/service keys + URL from the **Supabase Cloud** dashboard (same project). Set Site URL + redirect URLs for localhost + Vercel domains. |
 | Discord OAuth app (Desandria's own — for *sign-in only*, never for customer bots) | client id/secret (added to Supabase Auth provider config) | P1 | Create app in Discord Developer Portal; add redirect: `<SUPABASE_URL>/auth/v1/callback`. |
-| Token vault key | `TOKEN_ENC_KEY` | P2 | `openssl rand -hex 32`. Store in Vercel env + VPS env. Rotation invalidates stored tokens — document before rotating. |
+| Token vault key | `TOKEN_ENC_KEY` | P2 | ✅ Provided (32-byte hex) — in `.env`. Add to Vercel env at P0-04. Rotate the pasted value; rotation invalidates stored tokens. |
 | Private test guild | guild id (env later) | P3–P4 harness | Founder TODO §11.4. |
-| DeepSeek | `DEEPSEEK_API_KEY` | P4 | Create account, set spend limit ≤ $50/mo at the provider too. |
-| Anthropic | `ANTHROPIC_API_KEY` | P4 (escalation only) | Same — provider-side budget. |
+| DeepSeek | `DEEPSEEK_API_KEY` | P4 | Pending — founder buying credits. Default generator (§1). Set spend limit ≤ $50/mo provider-side too. |
+| Anthropic / **aerolink** (test) | `AEROLINK_API_KEY` (+ base URL TBD) | P4 (escalation/testing) | ✅ aerolink key provided ($100 test credit, Claude+codex). Confirm the gateway base URL at P4 — it is **not** `api.anthropic.com`; the OpenAI/Anthropic SDK `baseURL` must point at aerolink. Rotate the pasted key. |
 | Cloudflare R2 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_ARTIFACTS`, `R2_BUCKET_BACKUPS` | P4 artifacts, P7 backups | Create both buckets + scoped API token. |
-| Razorpay | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | P6 | KYC + international activation (founder TODO §11.3) — start now, it's slow. |
-| NOWPayments | `NOWPAYMENTS_API_KEY`, `NOWPAYMENTS_IPN_SECRET` | P6 | Account + IPN callback URL. |
+| Razorpay | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | P6 | ✅ KYC done, account set up (founder). Keys to be added to `.env`/Vercel at P6. |
+| NOWPayments | `NOWPAYMENTS_API_KEY`, `NOWPAYMENTS_IPN_SECRET` | P6 | ✅ Account set up (founder). Keys + IPN callback URL added at P6. |
+| GitHub MCP | PAT (in MCP config) | now | ⚠ PAT pasted in chat — **rotate it**. Repo `opsstoic20-gif/Desandria` already wired as `origin`; pushes work via Git Credential Manager. |
 | Vercel | project link | P0-04 | Link repo (git push → deploy) or deploy via Vercel MCP; set all env vars in Vercel dashboard, **server-side only** (no `NEXT_PUBLIC_` for secrets). |
 | VPS (Docker, Coolify, n8n) | SSH access | P5–P7 | Pradyuman. n8n reused for alert flows (CLAUDE.md table). |
 | Guardrails | `MAX_HOSTED_BOTS=50`, `LLM_MONTHLY_CAP_USD=50` | P4/P5 | Set everywhere the app or orchestrator runs. |

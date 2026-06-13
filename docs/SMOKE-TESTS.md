@@ -26,31 +26,32 @@ Verify the generated SQL contains `ENABLE ROW LEVEL SECURITY` for `users` and `a
 
 **Status: PASS (2026-06-12).** `drizzle/0000_last_warstar.sql` generated and verified.
 
-## P0-03 — DB round-trip through the Tunnel
+## P0-03 — DB round-trip read
 
-Prereq: `.env` with `DATABASE_URL` pointing at the Mumbai Postgres via Cloudflare Tunnel.
-
-```powershell
-pnpm db:migrate            # applies drizzle/ migrations to the Mumbai Postgres
-pnpm dev                   # then open:
-# http://localhost:3000/db-check  → must render "Postgres time" + "Rows in plans" (no error banner)
-```
-
-**Status: BLOCKED (2026-06-12).** Code in place (`src/db/index.ts`, `src/app/db-check/page.tsx`); cannot run without `DATABASE_URL` / Tunnel credentials. Build verified green without env (lazy client).
-
-## P0-04 — Vercel preview deploy (phase gate)
-
-Prereq: Vercel project linked, env vars set in Vercel (at minimum `DATABASE_URL`).
+Prereq: `.env` with `DATABASE_URL` (app, transaction pooler `:6543`) and `MIGRATE_DATABASE_URL` (session pooler `:5432`). Dev DB is Supabase Cloud (see docs/STATUS.md deviation note).
 
 ```powershell
-vercel deploy              # or deploy via the Vercel MCP / git integration
-# then: https://<preview-url>/health    → {"ok":true}
-# and:  https://<preview-url>/db-check  → renders live data from the Mumbai Postgres
+pnpm db:migrate            # applies drizzle/ migrations via the session pooler
+$env:PORT=3112; pnpm dev   # then:
+Invoke-WebRequest http://localhost:3112/health   -UseBasicParsing   # {"ok":true}
+Invoke-WebRequest http://localhost:3112/db-check -UseBasicParsing   # contains "Postgres time", no "Database unreachable"
 ```
 
-**P0 gate:** prod URL renders data read from the Mumbai Postgres (desandria.md §8).
+**Status: PASS (2026-06-13).** `db:migrate` → "migrations applied successfully". `/health` → `{"ok":true}`. `/db-check` → round-trip OK, `plans` rows = 0 (no seed yet — expected). Password verified correct against Supabase.
 
-**Status: BLOCKED (2026-06-12).** Needs Vercel project link + Tunnel hostname reachable from Vercel's network (public Tunnel hostname for Postgres, protected by strong auth — see docs/MCP-AND-INTEGRATIONS.md §Tunnel).
+## P0-04 — Vercel deploy (phase gate)
+
+Prereq: repo connected to a Vercel project (Git integration) + env vars set in Vercel — see docs/STATUS.md "P0-04 — exact steps".
+
+```
+# after the founder connects the repo + sets DATABASE_URL in Vercel:
+https://<url>/health    → {"ok":true}
+https://<url>/db-check  → renders Postgres time + plans rows (live read)
+```
+
+**P0 gate:** prod URL renders data read from the database (desandria.md §8).
+
+**Status: BLOCKED on founder (2026-06-13).** Cannot deploy headlessly: `vercel` CLI not authed (login is interactive) and the Vercel MCP only returns instructions. Repo is pushed to GitHub and ready to import. Local round-trip already proves the data path; only the prod hosting hop remains.
 
 ## Conventions for future phases
 
