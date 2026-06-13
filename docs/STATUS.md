@@ -63,6 +63,6 @@ Not started. Gate discipline per CLAUDE.md: do not begin a phase until the found
 
 ## Open questions for the P0 gate
 
-1. **DB password rotation:** the password pasted in chat (`greatthiswillbeourpassword`) is now in the transcript — rotate it in Supabase after the gate, then update `DATABASE_URL`/`MIGRATE_DATABASE_URL` in `.env` and Vercel.
+1. **DB password rotation (URGENT):** the dev DB password was exposed in chat — rotate it in the Supabase dashboard, then update `DATABASE_URL`/`MIGRATE_DATABASE_URL` in `.env` and Vercel. (The literal value must never be written into a tracked file; only `.env`, which is gitignored.)
 2. **`users.id` in P1** becomes a reference to Supabase `auth.users.id`. Migration `0001` will alter/recreate `users` — safe now (no rows). Confirm at the P1 gate.
 3. **Self-hosted cutover:** when the Mumbai Supabase is ready, swap the two connection strings and re-run `db:migrate`. No app changes expected.

@@ -8,6 +8,7 @@
 2. Every prompt ends with its smoke test executed and shown. If it cannot pass in this environment (missing creds, no VPS access), say exactly why and stop. **Never claim green that isn't green.**
 3. Small diffs. Migrations are separate commits. Conventional commits.
 4. Ambiguity → batch questions, raise at the phase gate. Do not improvise scope mid-prompt.
+   - **Deviation channel:** `desandria.md` decisions are locked. A founder-directed *temporary* deviation (e.g. dev on Supabase Cloud before the Mumbai self-host exists) is recorded in `docs/STATUS.md` → "Active deviations" with the date, the directive, and the pre-launch revert condition. That section is the controlled exception log; never silently diverge from `desandria.md` without an entry there. Permanent changes still require a `desandria.md` edit by the founder.
 5. Report format after each prompt:
    ```
    [P0-01] DONE — files touched: … — smoke: PASS (output below) — open questions: none

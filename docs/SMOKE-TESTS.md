@@ -51,7 +51,9 @@ https://<url>/db-check  → renders Postgres time + plans rows (live read)
 
 **P0 gate:** prod URL renders data read from the database (desandria.md §8).
 
-**Status: PARTIAL (2026-06-13).** Prod deployed (Vercel project `desandria`, region `bom1`). `https://desandria.vercel.app/health` → `{"ok":true}` ✅. `/db-check` returns 200 but the DB-unreachable banner because env vars are not yet set in Vercel. Closing step: set `DATABASE_URL` (+ `TOKEN_ENC_KEY`, `MAX_HOSTED_BOTS`, `LLM_MONTHLY_CAP_USD`) in the Vercel project, then redeploy → `/db-check` renders live data = gate CLOSED.
+**Status: PASS — P0 GATE CLOSED (2026-06-13).** After env vars were set in Vercel and the app redeployed (commit `88bd7be`, READY, region `bom1`):
+- `https://desandria.vercel.app/health` → `{"ok":true}`
+- `https://desandria.vercel.app/db-check` → live round-trip; Postgres time `2026-06-13 14:27:05.182117+00` rendered (read through Vercel → Supabase). DB-unreachable banner gone.
 
 Resolved gotcha: deployments of commits authored as `yokegg38@gmail.com` came back `BLOCKED` (author not on the Vercel team); commits now authored as `opsstoic20-gif <opsstoic20@gmail.com>` build normally.
 
